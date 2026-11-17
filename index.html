@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Maison Ichi</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout : une maquette 3D en pleine largeur, puis la légende numérotée qui renvoie aux repères de la maquette. */
+:root {
+  --bg: #f4f1ef;
+  --surface: #fbfaf9;
+  --fg: #1f2623;
+  --muted: #5d6763;
+  --line: #d9d3ce;
+  --accent: #1e5a47;
+  --accent-fg: #ffffff;
+  --brass: #96752d;
+  --scene: #e7e2dd;
+  --scene-ground: #cfc8c1;
+  --label-bg: rgba(255, 255, 255, 0.92);
+  --font-display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131816;
+    --surface: #1b2220;
+    --fg: #ebe7e2;
+    --muted: #a3ada8;
+    --line: #2f3936;
+    --accent: #79c7a8;
+    --accent-fg: #10231c;
+    --brass: #d1ad5c;
+    --scene: #1d2422;
+    --scene-ground: #262e2b;
+    --label-bg: rgba(27, 34, 32, 0.92);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131816;
+  --surface: #1b2220;
+  --fg: #ebe7e2;
+  --muted: #a3ada8;
+  --line: #2f3936;
+  --accent: #79c7a8;
+  --accent-fg: #10231c;
+  --brass: #d1ad5c;
+  --scene: #1d2422;
+  --scene-ground: #262e2b;
+  --label-bg: rgba(27, 34, 32, 0.92);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 52px;
+}
+section { display: flex; flex-direction: column; gap: 18px; }
+.eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.lead { margin: 0; font-size: 18px; line-height: 1.5; color: var(--muted); max-width: 60ch; }
+.prose { margin: 0; color: var(--muted); max-width: 65ch; }
+h3 { font-size: 15px; font-weight: 600; margin: 0 0 4px; }
+figure { margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+figure img { display: block; width: 100%; height: auto; border-radius: 6px; background: var(--scene); }
+figcaption { font-size: 13px; color: var(--muted); }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0 32px;
+}
+.cols > div { padding: 14px 0; border-top: 1px solid var(--line); min-width: 0; }
+.cols p { margin: 0; color: var(--muted); font-size: 14px; }
+.split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; align-items: center; }
+.split.rev { grid-template-columns: 1fr 1.5fr; }
+.split > div { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.split ul { margin: 0; padding-left: 18px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+.crop img { aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 62%; }
+@media (max-width: 720px) {
+  .split, .split.rev { grid-template-columns: 1fr; }
+}
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(26px, 4.5vw, 38px);
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 22px;
+  margin: 0;
+}
+.intro { display: flex; flex-direction: column; gap: 8px; }
+.intro p { margin: 0; color: var(--muted); max-width: 65ch; }
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-variant-numeric: tabular-nums;
+}
+.facts li { display: flex; align-items: baseline; gap: 8px; }
+.facts strong { font-size: 18px; font-weight: 600; }
+.facts span { color: var(--muted); font-size: 13px; }
+
+.viewer {
+  position: relative;
+  height: clamp(360px, 64vh, 640px);
+  background: var(--scene);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.viewer canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.viewer canvas:active { cursor: grabbing; }
+.labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.tag {
+  position: absolute;
+  left: 0; top: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px 2px 2px;
+  background: var(--label-bg);
+  color: var(--fg);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  will-change: transform;
+}
+.num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; height: 20px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.viewer.street .labels { display: none; }
+.tag .dims { color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 400; }
+.labels.no-dims .dims { display: none; }
+.cote {
+  position: absolute;
+  left: 0; top: 0;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  will-change: transform;
+}
+.legend .dim {
+  display: block;
+  color: var(--brass);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: var(--muted); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.controls button {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+}
+.controls button:hover { border-color: var(--accent); }
+.controls button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.controls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.controls .spacer { flex: 1 1 auto; }
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0 32px;
+}
+.legend li {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  min-width: 0;
+}
+.legend .num { margin-top: 2px; }
+.legend div { min-width: 0; }
+.legend b { font-weight: 600; }
+.legend p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.note { margin: 0; color: var(--muted); font-size: 14px; max-width: 70ch; }
+.note b { color: var(--fg); font-weight: 600; }
+@media (max-width: 560px) {
+  .tag { padding: 2px; }
+  .tag .name, .tag .dims { display: none; }
+}
+</style>
+
+<div class="page">
+  <section>
+    <header class="intro">
+      <p class="eyebrow">Maison Ichi · Projet de boutique · Guéliz, Marrakech</p>
+      <h1>Sacs de luxe de seconde main, sélectionnés au Japon</h1>
+      <p class="lead">Maison Ichi est une boutique de 40 m² au cœur de Guéliz, consacrée aux sacs des grandes maisons. « Ichi » veut dire « un » en japonais : chaque pièce est choisie au Japon et présentée seule, comme un bijou.</p>
+    </header>
+    <figure>
+      <img src="facade.webp" width="1618" height="972" alt="Devanture de la boutique au crépuscule : bandeau vert bouteille, lettres dorées, trois sacs sur socles en vitrine">
+      <figcaption>La devanture. Le nom seul sur le bandeau, trois sacs en vitrine, l'intérieur visible depuis le trottoir.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Le projet</h2>
+    <div class="cols">
+      <div><h3>Le constat</h3><p>À Marrakech, les sacs de luxe d'occasion se vendent surtout sur Instagram et WhatsApp, sans garantie, dans un marché où les contrefaçons sont nombreuses. Il manque une adresse physique de confiance.</p></div>
+      <div><h3>L'approvisionnement</h3><p>Les sacs sont achetés directement auprès d'un fournisseur au Japon, un marché de la seconde main reconnu pour la rigueur de ses contrôles et l'état des pièces.</p></div>
+      <div><h3>La clientèle</h3><p>Les Marocaines aisées de Marrakech, celles de Casablanca et Rabat en week-end, les expatriés et les touristes de passage à Guéliz.</p></div>
+      <div><h3>Le lieu</h3><p>Un emplacement passant à Guéliz. La surface est petite, mais un sac prend peu de place : 40 m² suffisent pour une vraie boutique et une réserve.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Le parti pris : montrer plutôt que dire</h2>
+    <p class="prose">Tous les vendeurs écrivent « authentique ». La boutique ne l'écrit nulle part : c'est le lieu, les gestes et la précision qui doivent le faire comprendre.</p>
+    <div class="cols">
+      <div><h3>Peu de pièces</h3><p>Un sac par niche, trois en vitrine. La rareté fait luxe, l'entassement fait douter.</p></div>
+      <div><h3>Un cartel par sac</h3><p>Modèle, année, cuir, état, référence. Comme dans un musée, la précision montre l'expertise.</p></div>
+      <div><h3>Les gestes de la joaillerie</h3><p>Sonnette à l'entrée, gants pour manipuler les sacs, vitrine fermée à clé pour les pièces rares.</p></div>
+      <div><h3>La reprise</h3><p>Chaque sac vendu peut être racheté par la boutique. Personne ne rachète une contrefaçon.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>L'espace de vente</h2>
+    <figure>
+      <img src="vente.webp" width="1774" height="887" alt="Intérieur de la boutique : deux murs de niches éclairées vert bouteille, îlot central en pierre claire, salon au fond">
+      <figcaption>Vue depuis l'entrée. Deux murs de niches éclairées, l'îlot des nouveautés au centre, la vitrine des pièces rares au fond.</figcaption>
+    </figure>
+    <div class="split">
+      <figure>
+        <img src="salon.webp" width="1536" height="1024" alt="Salon conseil : deux fauteuils en velours bordeaux, table basse, grand miroir, caisse à gauche">
+        <figcaption>Le salon conseil et la caisse.</figcaption>
+      </figure>
+      <div>
+        <h3>30 m² pour recevoir</h3>
+        <ul>
+          <li>Deux murs d'exposition de 3 m, un sac par niche.</li>
+          <li>Un îlot central avec 1,50 m de passage de chaque côté.</li>
+          <li>Un salon avec deux fauteuils et un grand miroir, pour les essayages et les dépôts.</li>
+          <li>La caisse au fond, avec vue sur toute la boutique et sur la porte.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>L'arrière-boutique</h2>
+    <div class="split rev">
+      <figure class="crop">
+        <img src="reserve-dessus.webp" width="950" height="1656" alt="Arrière-boutique vue de dessus : bureau, étagères, boîte à lumière et coffre alignés le long du mur">
+        <figcaption>La réserve vue de dessus : le bureau, les étagères, le coin photo et le coffre-fort.</figcaption>
+      </figure>
+      <div>
+        <h3>10 m² pour travailler</h3>
+        <ul>
+          <li>Un bureau avec lampe et loupe, où chaque sac est contrôlé avant la mise en vente.</li>
+          <li>Des étagères pour les sacs en attente, les boîtes et les dustbags.</li>
+          <li>Une boîte à lumière pour les photos du site et d'Instagram.</li>
+          <li>Un coffre-fort pour les pièces de valeur la nuit.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+  <h2>Le plan en 3D</h2>
+  <p class="prose">La maquette se manipule : glisser pour tourner, molette ou pincement pour zoomer. Elle repose sur un local rectangulaire de 5 m de façade sur 8 m de profondeur.</p>
+  <ul class="facts">
+    <li><strong>30 m²</strong><span>espace de vente</span></li>
+    <li><strong>10 m²</strong><span>arrière-boutique</span></li>
+    <li><strong id="bagCount">40</strong><span>sacs exposés</span></li>
+    <li><strong>5 × 8 m</strong><span>largeur × profondeur</span></li>
+    <li><strong>2,80 m</strong><span>sous plafond</span></li>
+  </ul>
+
+  <div class="controls" role="group" aria-label="Points de vue">
+    <button type="button" id="v-ensemble" data-view="ensemble" aria-pressed="true">Vue d'ensemble</button>
+    <button type="button" id="v-dessus" data-view="dessus" aria-pressed="false">Vue de dessus</button>
+    <button type="button" id="v-rue" data-view="rue" aria-pressed="false">Devanture</button>
+    <button type="button" id="v-entree" data-view="entree" aria-pressed="false">Depuis l'entrée</button>
+    <button type="button" id="v-arriere" data-view="arriere" aria-pressed="false">Arrière-boutique</button>
+    <span class="spacer"></span>
+    <button type="button" id="toggleCotes" aria-pressed="true">Cotes</button>
+    <button type="button" id="toggleLabels" aria-pressed="true">Repères</button>
+  </div>
+
+  <div class="viewer" id="viewer">
+    <canvas id="scene" aria-label="Maquette 3D de la boutique"></canvas>
+    <div class="labels" id="labels"></div>
+    <div class="labels" id="cotes"></div>
+  </div>
+  </section>
+
+  <section>
+  <h2>Le plan, zone par zone</h2>
+  <ul class="legend">
+    <li><span class="num">1</span><div><b>Vitrine sur rue</b><p>Podium de 2,9 m derrière la vitre, trois sacs seulement, changés chaque semaine. L'intérieur reste visible depuis le trottoir.</p></div></li>
+    <li><span class="num">2</span><div><b>Murs d'exposition</b><p>Deux meubles de 3 m, niches éclairées de 60 cm, un sac par niche. Le bas est un placard fermé pour le stock courant.</p></div></li>
+    <li><span class="num">3</span><div><b>Îlot central</b><p>Table de 1,2 × 0,8 m pour les nouveautés. Il reste 1,5 m de passage de chaque côté.</p></div></li>
+    <li><span class="num">4</span><div><b>Salon conseil</b><p>Deux fauteuils, une table basse et un grand miroir. C'est là que se font les essayages et les dépôts de sacs.</p></div></li>
+    <li><span class="num">5</span><div><b>Vitrine pièces rares</b><p>Armoire vitrée fermée à clé pour les sacs les plus chers, face à l'entrée pour attirer le regard au fond.</p></div></li>
+    <li><span class="num">6</span><div><b>Caisse</b><p>Comptoir de 1,25 m au fond à droite, avec vue sur toute la boutique et sur la porte. La porte de l'arrière-boutique est juste derrière.</p></div></li>
+    <li><span class="num">7</span><div><b>Coffre-fort</b><p>Pour les pièces de valeur la nuit et le fonds de caisse. Hors de vue des clients.</p></div></li>
+    <li><span class="num">8</span><div><b>Réserve</b><p>Étagères de 2,2 m sur le mur du fond : sacs en attente, boîtes, dustbags et emballages.</p></div></li>
+    <li><span class="num">9</span><div><b>Poste d'authentification</b><p>Bureau avec lampe pour contrôler chaque sac avant la mise en vente et préparer les certificats.</p></div></li>
+    <li><span class="num">10</span><div><b>Coin photo</b><p>Boîte à lumière sur table pour les photos Instagram et le site, sans sortir les sacs de la réserve.</p></div></li>
+  </ul>
+
+  </section>
+
+  <p class="note"><b>À ce stade du projet.</b> Le plan repose sur une hypothèse de 5 m sur 8 m : il sera recalé sur les dimensions du local retenu.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function () {
+  var viewer = document.getElementById('viewer');
+  var canvas = document.getElementById('scene');
+  var labelsEl = document.getElementById('labels');
+  var cotesEl = document.getElementById('cotes');
+
+  // Dimensions des meubles : longueur × profondeur × hauteur, en mètres.
+  var DIMS = {
+    1: 'Podium 2,90 × 0,70 m, H 0,40 m',
+    2: '3,00 × 0,40 m, H 2,35 m (niches de 60 cm)',
+    3: '1,20 × 0,80 m, H 0,90 m',
+    4: 'Tapis Ø 2,10 m, fauteuils 0,70 × 0,65 m',
+    5: '0,80 × 0,42 m, H 2,05 m',
+    6: '1,25 × 0,60 m, H 1,05 m',
+    7: '0,70 × 0,70 m, H 1,30 m',
+    8: '2,20 × 0,40 m, H 2,20 m',
+    9: 'Bureau 1,45 × 0,55 m, H 0,75 m',
+    10: 'Table 0,65 × 0,80 m, boîte à lumière 60 cm'
+  };
+  var SHORT = {
+    1: '2,90 × 0,70', 2: '3,00 × 0,40 · H 2,35', 3: '1,20 × 0,80 · H 0,90', 4: 'Ø 2,10',
+    5: '0,80 × 0,42 · H 2,05', 6: '1,25 × 0,60 · H 1,05', 7: '0,70 × 0,70 · H 1,30',
+    8: '2,20 × 0,40 · H 2,20', 9: '1,45 × 0,55', 10: '0,65 × 0,80'
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('.legend li'), function (li, i) {
+    var b = li.querySelector('b');
+    if (!b || !DIMS[i + 1]) return;
+    var s = document.createElement('span');
+    s.className = 'dim';
+    s.textContent = DIMS[i + 1];
+    b.parentNode.insertBefore(s, b.nextSibling);
+  });
+
+  function fail() {
+    canvas.hidden = true;
+    var d = document.createElement('div');
+    d.className = 'fallback';
+    d.textContent = "La 3D n'a pas pu se charger sur cet appareil. La légende ci-dessous décrit chaque zone du plan.";
+    viewer.appendChild(d);
+  }
+  if (!window.THREE) { fail(); return; }
+
+  var renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  } catch (e) { fail(); return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  var controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.maxPolarAngle = Math.PI / 2 - 0.03;
+  controls.minDistance = 1.5;
+  controls.maxDistance = 22;
+
+  // ---------- lumières
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xb8aea4, 0.62));
+  var sun = new THREE.DirectionalLight(0xfff3e0, 0.55);
+  sun.position.set(4, 12, -6);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.left = -8; sun.shadow.camera.right = 8;
+  sun.shadow.camera.top = 8; sun.shadow.camera.bottom = -8;
+  sun.shadow.bias = -0.0005;
+  scene.add(sun);
+
+  // ---------- matériaux
+  function M(color, opts) {
+    var o = opts || {};
+    o.color = color;
+    if (o.roughness === undefined) o.roughness = 0.8;
+    return new THREE.MeshStandardMaterial(o);
+  }
+  var mat = {
+    floor: M(0xdcd4c8, { roughness: 0.6 }),
+    floorBack: M(0xb4b0aa),
+    wall: M(0xe9d6c8),
+    wallBack: M(0xdedad5),
+    green: M(0x234a3d, { roughness: 0.55 }),
+    niche: M(0xf1e8dc),
+    brass: M(0xb8944a, { metalness: 0.7, roughness: 0.35 }),
+    stone: M(0xeee9e1, { roughness: 0.5 }),
+    glass: M(0xcfe5e1, { transparent: true, opacity: 0.2, roughness: 0.1 }),
+    led: M(0xfff1cf, { emissive: 0xffe2a6, emissiveIntensity: 1 }),
+    velvet: M(0x7a2e3a, { roughness: 0.95 }),
+    rug: M(0xe8dfd0, { roughness: 1 }),
+    mirror: M(0xdfe8ea, { metalness: 0.9, roughness: 0.12 }),
+    steel: M(0x3a3f42, { metalness: 0.6, roughness: 0.45 }),
+    metalShelf: M(0x8d9294, { metalness: 0.5, roughness: 0.5 }),
+    box: M(0xf3ede2),
+    boxOrange: M(0xd9722e),
+    white: M(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 }),
+    wood: M(0x8a6a4a),
+    dark: M(0x1c1c1c),
+    ground: M(0xcfc8c1, { roughness: 1 })
+  };
+
+  // ---------- helpers (coordonnées du local : x 0→5 largeur, z 0→8 profondeur, façade en z = 0)
+  var room = new THREE.Group();
+  room.position.set(-2.5, 0, -4);
+  scene.add(room);
+
+  function B(x0, x1, y0, y1, z0, z1, material, parent, noShadow) {
+    var m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), material);
+    m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+    if (!noShadow) { m.castShadow = true; m.receiveShadow = true; }
+    (parent || room).add(m);
+    return m;
+  }
+
+  var bagColors = [0x151515, 0xb07a45, 0x6d1f2b, 0xd8c3a5, 0x1f4a3a, 0xa3221f, 0x2a3350, 0xe9e2d6, 0x8c5a3c, 0xc98a9a];
+  var bagTotal = 0;
+  var bagSeed = 7;
+  function rnd() { bagSeed = (bagSeed * 16807) % 2147483647; return bagSeed / 2147483647; }
+
+  function bag(x, y, z, rotY, scale) {
+    var g = new THREE.Group();
+    var c = M(bagColors[Math.floor(rnd() * bagColors.length)], { roughness: 0.5 });
+    var w = 0.26 + rnd() * 0.08, h = 0.18 + rnd() * 0.06, d = 0.11;
+    var body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), c);
+    body.position.y = h / 2; body.castShadow = true; g.add(body);
+    var flap = new THREE.Mesh(new THREE.BoxGeometry(w * 1.01, h * 0.45, 0.012), c);
+    flap.position.set(0, h * 0.76, d / 2 + 0.004); g.add(flap);
+    var clasp = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.03, 0.012), mat.brass);
+    clasp.position.set(0, h * 0.55, d / 2 + 0.012); g.add(clasp);
+    var handle = new THREE.Mesh(new THREE.TorusGeometry(w * 0.26, 0.011, 8, 20, Math.PI), c);
+    handle.position.y = h; g.add(handle);
+    g.position.set(x, y, z);
+    g.rotation.y = rotY;
+    if (scale) g.scale.setScalar(scale);
+    room.add(g);
+    bagTotal++;
+    return g;
+  }
+
+  // ---------- sols
+  var f1 = B(0, 5, -0.05, 0, 0, 6, mat.floor); f1.castShadow = false;
+  var f2 = B(0, 5, -0.05, 0, 6, 8, mat.floorBack); f2.castShadow = false;
+  var ground = new THREE.Mesh(new THREE.CircleGeometry(30, 48), mat.ground);
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -0.06; ground.receiveShadow = true;
+  scene.add(ground);
+
+  // ---------- murs extérieurs (masqués quand la caméra est derrière eux)
+  var H = 2.8, T = 0.12;
+  var wallLeft = B(-T, 0, 0, H, -T, 8 + T, mat.wall);
+  var wallRight = B(5, 5 + T, 0, H, -T, 8 + T, mat.wall);
+  var wallBack = B(0, 5, 0, H, 8, 8 + T, mat.wallBack);
+
+  var facade = new THREE.Group(); room.add(facade);
+  B(0, 0.3, 0, H, -T, 0, mat.wall, facade);
+  B(4.6, 5, 0, H, -T, 0, mat.wall, facade);
+  B(3.4, 3.6, 0, 2.5, -T, 0, mat.green, facade);
+  B(0.3, 3.4, 0, 0.3, -T, 0, mat.green, facade);
+  B(0.3, 4.6, 2.5, H, -T, 0, mat.green, facade);
+  B(0.3, 3.4, 0.3, 2.5, -0.07, -0.05, mat.glass, facade, true);
+  var door = B(0, 1, 0, 2.5, -0.02, 0.02, mat.glass, null, true);
+  var doorPivot = new THREE.Group();
+  doorPivot.position.set(4.6, 0, -0.06);
+  door.position.set(-0.5, 1.25, 0);
+  doorPivot.add(door);
+  var doorHandle = B(-0.95, -0.91, 0.9, 1.3, -0.06, 0.06, mat.brass, doorPivot, true);
+  doorPivot.rotation.y = -0.5;
+  facade.add(doorPivot);
+
+  // ---------- devanture : bandeau d'enseigne, sonnette, immeuble et trottoir (vus depuis la rue)
+  B(0.3, 4.7, 2.5, 3.3, -T - 0.05, -T, mat.green, facade);
+  B(0.3, 4.7, 2.48, 2.5, -T - 0.06, -T, mat.brass, facade, true);
+  B(0.3, 4.7, 3.3, 3.32, -T - 0.06, -T, mat.brass, facade, true);
+  B(4.72, 4.82, 1.22, 1.4, -T - 0.015, -T, mat.brass, facade, true);
+  B(4.755, 4.785, 1.29, 1.32, -T - 0.025, -T - 0.015, mat.dark, facade, true);
+
+  var signCanvas = document.createElement('canvas');
+  signCanvas.width = 2048; signCanvas.height = 372;
+  var signTex = new THREE.CanvasTexture(signCanvas);
+  function drawSign() {
+    var ctx = signCanvas.getContext('2d');
+    ctx.clearRect(0, 0, 2048, 372);
+    ctx.fillStyle = '#dcb967';
+    ctx.textAlign = 'center';
+    try { ctx.letterSpacing = '10px'; } catch (e) {}
+    ctx.font = '600 160px "Bodoni Moda", Didot, "Times New Roman", serif';
+    ctx.fillText('Maison Ichi', 1024, 192);
+    try { ctx.letterSpacing = '14px'; } catch (e) {}
+    ctx.font = '500 50px Inter, system-ui, sans-serif';
+    ctx.fillText('MARRAKECH  ·  TOKYO', 1024, 300);
+    signTex.needsUpdate = true;
+  }
+  drawSign();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawSign);
+  var sign = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 0.8), new THREE.MeshBasicMaterial({ map: signTex, transparent: true }));
+  sign.position.set(2.5, 2.9, -T - 0.056);
+  sign.rotation.y = Math.PI;
+  facade.add(sign);
+
+  // cartels de musée devant les sacs de la vitrine
+  [0.95, 1.85, 2.75].forEach(function (x) {
+    var card = B(x - 0.07, x + 0.07, 0.42, 0.5, 0.215, 0.225, mat.box, null, true);
+    card.rotation.x = 0.35;
+  });
+  var vitrineLight = new THREE.PointLight(0xffd9a0, 0.55, 5);
+  vitrineLight.position.set(1.85, 2.2, 0.7);
+  room.add(vitrineLight);
+
+  var street = new THREE.Group(); room.add(street);
+  B(-T, 5 + T, H, 4.6, -T, 0, mat.wall, street);
+  B(-4, -T, 0, 4.6, -T, 0, mat.wall, street);
+  B(5 + T, 9, 0, 4.6, -T, 0, mat.wall, street);
+  B(-4, 9, -0.06, 0, -3.2, -T, M(0xbdb7ae), street);
+  B(-4, 9, 0, 0.12, -T - 0.02, -T, mat.steel, street, true);
+  street.visible = false;
+
+  var ceiling = B(0, 5, H, H + 0.05, 0, 8, mat.stone, null, true);
+  ceiling.visible = false;
+
+  // ---------- cloison de l'arrière-boutique (porte derrière la caisse, x 3,8 → 4,7)
+  var partFull = new THREE.Group(), partCut = new THREE.Group();
+  room.add(partFull); room.add(partCut);
+  B(0, 3.8, 0, H, 6, 6.1, mat.wall, partFull);
+  B(4.7, 5, 0, H, 6, 6.1, mat.wall, partFull);
+  B(3.8, 4.7, 2.1, H, 6, 6.1, mat.wall, partFull);
+  B(0, 3.8, 0, 1.1, 6, 6.1, mat.wall, partCut);
+  B(4.7, 5, 0, 1.1, 6, 6.1, mat.wall, partCut);
+
+  // ---------- 1. vitrine sur rue
+  B(0.4, 3.3, 0, 0.4, 0.15, 0.85, mat.stone);
+  B(0.4, 3.3, 0.4, 0.42, 0.15, 0.85, mat.brass);
+  [[0.95, 0.15], [1.85, 0.32], [2.75, 0.08]].forEach(function (p) {
+    B(p[0] - 0.22, p[0] + 0.22, 0.42, 0.42 + p[1], 0.3, 0.7, mat.green);
+    bag(p[0], 0.42 + p[1], 0.5, Math.PI, 1.25);
+  });
+
+  // ---------- 2. meubles muraux à niches
+  function shelfUnit(xWall, dir, z0, z1) {
+    var xFront = xWall + dir * 0.4;
+    var xa = Math.min(xWall, xFront), xb = Math.max(xWall, xFront);
+    var pa = Math.min(xWall, xWall + dir * 0.03), pb = Math.max(xWall, xWall + dir * 0.03);
+    B(pa, pb, 0.5, 2.34, z0, z1, mat.niche);
+    B(xa, xb, 0, 0.5, z0, z1, mat.green);
+    var ea = Math.min(xFront, xFront - dir * 0.03), eb = Math.max(xFront, xFront - dir * 0.03);
+    [0.5, 1.1, 1.7, 2.3].forEach(function (y, i) {
+      B(xa, xb, y, y + 0.04, z0, z1, mat.green);
+      if (i > 0) B(ea, eb, y - 0.015, y, z0 + 0.04, z1 - 0.04, mat.led, null, true);
+    });
+    B(ea, eb, 0.5, 0.515, z0, z1, mat.brass, null, true);
+    var n = Math.round((z1 - z0) / 0.6);
+    var step = (z1 - z0) / n;
+    for (var i = 0; i <= n; i++) {
+      var z = z0 + i * step;
+      B(xa, xb, 0.5, 2.34, Math.max(z0, z - 0.015), Math.min(z1, z + 0.015), mat.green);
+    }
+    for (var c = 0; c < n; c++) {
+      for (var r = 0; r < 3; r++) {
+        bag(xWall + dir * 0.2, 0.54 + r * 0.6, z0 + (c + 0.5) * step, dir * Math.PI / 2, 1.1);
+      }
+    }
+  }
+  shelfUnit(0, 1, 1.1, 4.1);
+  shelfUnit(5, -1, 1.3, 4.3);
+
+  // ---------- 3. îlot central
+  B(1.95, 3.05, 0, 0.06, 2.45, 3.15, mat.brass);
+  B(1.9, 3.1, 0.06, 0.85, 2.4, 3.2, mat.green);
+  B(1.86, 3.14, 0.85, 0.9, 2.36, 3.24, mat.stone);
+  bag(2.15, 0.9, 2.8, Math.PI + 0.25, 1.2);
+  bag(2.5, 0.9, 2.75, Math.PI, 1.2);
+  bag(2.85, 0.9, 2.8, Math.PI - 0.25, 1.2);
+
+  // ---------- 4. salon conseil
+  var rug = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.05, 0.015, 48), mat.rug);
+  rug.position.set(1.4, 0.008, 4.85); rug.receiveShadow = true; room.add(rug);
+  function armchair(x, z, rotY) {
+    var g = new THREE.Group();
+    B(-0.32, 0.32, 0.12, 0.42, -0.3, 0.32, mat.velvet, g);
+    B(-0.32, 0.32, 0.42, 0.85, -0.32, -0.2, mat.velvet, g);
+    B(-0.36, -0.26, 0.12, 0.6, -0.32, 0.3, mat.velvet, g);
+    B(0.26, 0.36, 0.12, 0.6, -0.32, 0.3, mat.velvet, g);
+    B(-0.3, 0.3, 0, 0.12, -0.28, 0.28, mat.brass, g);
+    g.position.set(x, 0, z); g.rotation.y = rotY; room.add(g);
+  }
+  armchair(0.75, 4.85, Math.PI / 2);
+  armchair(2.05, 4.85, -Math.PI / 2);
+  var tTop = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.03, 32), mat.stone);
+  tTop.position.set(1.4, 0.5, 4.85); tTop.castShadow = true; room.add(tTop);
+  var tLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.12, 0.49, 16), mat.brass);
+  tLeg.position.set(1.4, 0.245, 4.85); room.add(tLeg);
+  B(0.5, 1.25, 0.08, 2.05, 5.92, 5.96, mat.brass);
+  B(0.54, 1.21, 0.12, 2.01, 5.9, 5.925, mat.mirror, null, true);
+
+  // ---------- 5. vitrine pièces rares
+  B(2.1, 2.9, 0, 0.5, 5.55, 5.97, mat.green);
+  B(2.1, 2.9, 2.0, 2.06, 5.55, 5.97, mat.green);
+  B(2.1, 2.9, 0.5, 2.0, 5.94, 5.97, mat.niche);
+  [[2.1, 5.55], [2.87, 5.55]].forEach(function (p) {
+    B(p[0], p[0] + 0.03, 0.5, 2.0, p[1], p[1] + 0.03, mat.brass);
+  });
+  B(2.1, 2.9, 0.5, 2.0, 5.55, 5.57, mat.glass, null, true);
+  [0.5, 1.0, 1.5].forEach(function (y) {
+    B(2.12, 2.88, y, y + 0.02, 5.58, 5.94, mat.stone, null, true);
+    B(2.14, 2.86, y + 0.47, y + 0.485, 5.59, 5.62, mat.led, null, true);
+    bag(2.32, y + 0.02, 5.76, Math.PI, 1.05);
+    bag(2.68, y + 0.02, 5.76, Math.PI, 1.05);
+  });
+
+  // ---------- 6. caisse
+  B(3.7, 4.95, 0, 1.0, 4.7, 5.3, mat.green);
+  B(3.66, 4.95, 1.0, 1.05, 4.66, 5.34, mat.stone);
+  B(3.7, 4.95, 0, 0.06, 4.68, 4.7, mat.brass, null, true);
+  B(4.35, 4.7, 1.05, 1.3, 5.1, 5.13, mat.dark);
+  B(4.47, 4.58, 1.05, 1.1, 5.08, 5.2, mat.dark);
+
+  // ---------- 7. coffre-fort
+  B(0.1, 0.8, 0, 1.3, 6.2, 6.9, mat.steel);
+  var wheel = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.018, 8, 24), mat.brass);
+  wheel.rotation.y = Math.PI / 2; wheel.position.set(0.83, 0.75, 6.55); room.add(wheel);
+
+  // ---------- 8. réserve
+  [1.0, 2.1, 3.2].forEach(function (x) { B(x - 0.02, x + 0.02, 0, 2.2, 7.55, 7.95, mat.metalShelf); });
+  [0.15, 0.65, 1.15, 1.65, 2.15].forEach(function (y, row) {
+    B(1.0, 3.2, y, y + 0.03, 7.55, 7.95, mat.metalShelf);
+    if (row < 4) {
+      for (var i = 0; i < 5; i++) {
+        var bx = 1.12 + i * 0.42 + (i > 2 ? 0.04 : 0);
+        var bh = 0.22 + rnd() * 0.16;
+        B(bx, bx + 0.34, y + 0.03, y + 0.03 + bh, 7.6, 7.9, rnd() > 0.75 ? mat.boxOrange : mat.box);
+      }
+    }
+  });
+
+  // ---------- 9. poste d'authentification
+  B(3.4, 4.85, 0.72, 0.76, 7.35, 7.9, mat.wood);
+  [[3.43, 7.38], [4.78, 7.38], [3.43, 7.83], [4.78, 7.83]].forEach(function (p) {
+    B(p[0], p[0] + 0.04, 0, 0.72, p[1], p[1] + 0.04, mat.steel);
+  });
+  B(4.55, 4.59, 0.76, 1.2, 7.75, 7.79, mat.brass);
+  B(4.3, 4.6, 1.18, 1.22, 7.55, 7.8, mat.brass);
+  B(4.32, 4.58, 1.165, 1.18, 7.57, 7.78, mat.led, null, true);
+  bag(3.95, 0.76, 7.6, Math.PI + 0.3, 1.1); bagTotal--;
+  var stool = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.06, 24), mat.velvet);
+  stool.position.set(4.1, 0.48, 6.95); stool.castShadow = true; room.add(stool);
+  var stoolLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.14, 0.45, 12), mat.steel);
+  stoolLeg.position.set(4.1, 0.225, 6.95); room.add(stoolLeg);
+
+  // ---------- 10. coin photo
+  B(0.1, 0.75, 0.7, 0.74, 7.1, 7.9, mat.wood);
+  B(0.12, 0.72, 0, 0.7, 7.14, 7.86, mat.steel);
+  B(0.12, 0.72, 0.74, 0.76, 7.2, 7.8, mat.white, null, true);
+  B(0.12, 0.14, 0.74, 1.34, 7.2, 7.8, mat.white, null, true);
+  B(0.12, 0.72, 0.74, 1.34, 7.8, 7.82, mat.white, null, true);
+  B(0.12, 0.72, 0.74, 1.34, 7.18, 7.2, mat.white, null, true);
+  B(0.12, 0.72, 1.34, 1.36, 7.2, 7.8, mat.white, null, true);
+  bag(0.45, 0.76, 7.5, Math.PI / 2, 1.1); bagTotal--;
+
+  document.getElementById('bagCount').textContent = bagTotal;
+
+  // ---------- repères
+  var tags = [
+    [1, 'Vitrine', 1.85, 1.15, 0.5],
+    [2, "Mur d'exposition", 0.3, 2.55, 2.6],
+    [2, "Mur d'exposition", 4.7, 2.55, 2.8],
+    [3, 'Îlot central', 2.5, 1.35, 2.8],
+    [4, 'Salon conseil', 1.4, 0.95, 4.85],
+    [5, 'Pièces rares', 2.5, 2.25, 5.75],
+    [6, 'Caisse', 4.3, 1.45, 5.0],
+    [7, 'Coffre-fort', 0.45, 1.5, 6.55],
+    [8, 'Réserve', 2.1, 2.4, 7.75],
+    [9, 'Authentification', 4.1, 1.4, 7.6],
+    [10, 'Coin photo', 0.45, 1.55, 7.5]
+  ].map(function (t) {
+    var el = document.createElement('div');
+    el.className = 'tag';
+    var n = document.createElement('span'); n.className = 'num'; n.textContent = t[0];
+    var s = document.createElement('span'); s.className = 'name'; s.textContent = t[1];
+    var d = document.createElement('span'); d.className = 'dims'; d.textContent = SHORT[t[0]] + ' m';
+    el.appendChild(n); el.appendChild(s); el.appendChild(d);
+    labelsEl.appendChild(el);
+    return { el: el, pos: new THREE.Vector3(t[2] - 2.5, t[3], t[4] - 4) };
+  });
+
+  // ---------- cotes du local (lignes au sol, toujours visibles)
+  var cotesGroup = new THREE.Group(); room.add(cotesGroup);
+  var coteMat = new THREE.LineBasicMaterial({ color: 0x1f2623, depthTest: false, transparent: true });
+  var cotes = [];
+  function cote(x0, z0, x1, z1, text) {
+    var y = 0.04, k = 0.12;
+    var dx = x1 - x0, dz = z1 - z0, len = Math.sqrt(dx * dx + dz * dz);
+    var px = -dz / len * k, pz = dx / len * k;
+    var pts = [
+      x0, y, z0, x1, y, z1,
+      x0 - px, y, z0 - pz, x0 + px, y, z0 + pz,
+      x1 - px, y, z1 - pz, x1 + px, y, z1 + pz
+    ];
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+    var l = new THREE.LineSegments(g, coteMat);
+    l.renderOrder = 10;
+    cotesGroup.add(l);
+    var el = document.createElement('div');
+    el.className = 'cote';
+    el.textContent = text;
+    cotesEl.appendChild(el);
+    cotes.push({ el: el, pos: new THREE.Vector3((x0 + x1) / 2 - 2.5, y, (z0 + z1) / 2 - 4) });
+  }
+  cote(0, -0.75, 5, -0.75, 'Largeur 5,00 m');
+  cote(3.6, -0.3, 4.6, -0.3, 'Porte 1,00 m');
+  cote(6.2, 0, 6.2, 8, 'Profondeur 8,00 m');
+  cote(5.6, 0, 5.6, 6, 'Vente 6,00 m');
+  cote(5.6, 6.1, 5.6, 8, 'Réserve 1,90 m');
+  cote(0.4, 3.65, 1.9, 3.65, '1,50 m');
+  cote(3.1, 3.65, 4.6, 3.65, '1,50 m');
+  cote(0, 4.25, 0, 6, 'Salon 1,75 m');
+
+  // ---------- points de vue
+  var views = {
+    ensemble: { pos: [1.6, 9.0, -8.4], target: [0.3, 0.6, 0.2], fov: 42 },
+    dessus: { pos: [0.5, 13.5, 0.02], target: [0.5, 0, 0], fov: 42 },
+    rue: { pos: [0.4, 1.6, -10.2], target: [0, 1.75, -4], fov: 42 },
+    entree: { pos: [1.5, 1.6, -3.7], target: [-0.7, 1.15, 1.2], fov: 68 },
+    arriere: { pos: [-7.2, 6.6, 5.2], target: [0.2, 0.5, 2.7], fov: 42 }
+  };
+  var tween = null;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function goTo(name, instant) {
+    var v = views[name];
+    if (name === 'rue') {
+      var dist = Math.max(6.2, 3.1 / (Math.tan(21 * Math.PI / 180) * (camera.aspect || 1)));
+      v.pos[2] = -4 - dist;
+    }
+    var to = { pos: new THREE.Vector3().fromArray(v.pos), target: new THREE.Vector3().fromArray(v.target), fov: v.fov };
+    if (instant || reduce) {
+      camera.position.copy(to.pos); controls.target.copy(to.target);
+      camera.fov = to.fov; camera.updateProjectionMatrix(); tween = null;
+    } else {
+      tween = { t0: performance.now(), dur: 900, fromPos: camera.position.clone(), fromTarget: controls.target.clone(), fromFov: camera.fov, to: to };
+    }
+    document.querySelectorAll('[data-view]').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.dataset.view === name ? 'true' : 'false');
+    });
+  }
+  document.querySelectorAll('[data-view]').forEach(function (b) {
+    b.addEventListener('click', function () { goTo(b.dataset.view); });
+  });
+  controls.addEventListener('start', function () {
+    tween = null;
+    document.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+  });
+
+  var showLabels = true;
+  var tl = document.getElementById('toggleLabels');
+  tl.addEventListener('click', function () {
+    showLabels = !showLabels;
+    tl.setAttribute('aria-pressed', showLabels ? 'true' : 'false');
+    labelsEl.hidden = !showLabels;
+  });
+  var showCotes = true;
+  var tc = document.getElementById('toggleCotes');
+  tc.addEventListener('click', function () {
+    showCotes = !showCotes;
+    tc.setAttribute('aria-pressed', showCotes ? 'true' : 'false');
+    cotesEl.hidden = !showCotes;
+    cotesGroup.visible = showCotes;
+    labelsEl.classList.toggle('no-dims', !showCotes);
+  });
+
+  // ---------- thème
+  function applyTheme() {
+    var cs = getComputedStyle(document.documentElement);
+    var bg = cs.getPropertyValue('--scene').trim() || '#e7e2dd';
+    var gr = cs.getPropertyValue('--scene-ground').trim() || '#cfc8c1';
+    renderer.setClearColor(new THREE.Color(bg), 1);
+    mat.ground.color.set(gr);
+    coteMat.color.set(cs.getPropertyValue('--fg').trim() || '#1f2623');
+  }
+  applyTheme();
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', applyTheme);
+  }
+  new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // ---------- taille
+  var W = 1, Hh = 1;
+  function resize() {
+    W = viewer.clientWidth; Hh = viewer.clientHeight;
+    if (!W || !Hh) return;
+    renderer.setSize(W, Hh, false);
+    camera.aspect = W / Hh;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(viewer);
+  else window.addEventListener('resize', resize);
+
+  goTo('ensemble', true);
+
+  // ---------- boucle
+  var v3 = new THREE.Vector3();
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+  function frame(now) {
+    if (tween) {
+      var k = Math.min(1, (now - tween.t0) / tween.dur), e = ease(k);
+      camera.position.lerpVectors(tween.fromPos, tween.to.pos, e);
+      controls.target.lerpVectors(tween.fromTarget, tween.to.target, e);
+      camera.fov = tween.fromFov + (tween.to.fov - tween.fromFov) * e;
+      camera.updateProjectionMatrix();
+      if (k >= 1) tween = null;
+    }
+    controls.update();
+
+    var cx = camera.position.x + 2.5, cz = camera.position.z + 4, cy = camera.position.y;
+    var inside = cx > 0 && cx < 5 && cz > 0 && cz < 8 && cy < H;
+    wallLeft.visible = cx > 0;
+    wallRight.visible = cx < 5;
+    var fromStreet = cz < 0 && cy < 3.4;
+    facade.visible = cz > 0 || fromStreet;
+    street.visible = fromStreet;
+    wallBack.visible = cz < 8;
+    partFull.visible = inside || fromStreet;
+    partCut.visible = !inside && !fromStreet;
+    ceiling.visible = inside || fromStreet;
+    cotesGroup.visible = showCotes && !fromStreet;
+    viewer.classList.toggle('street', fromStreet);
+
+    renderer.render(scene, camera);
+
+    if (showLabels) {
+      for (var i = 0; i < tags.length; i++) {
+        var t = tags[i];
+        v3.copy(t.pos).project(camera);
+        var ok = v3.z < 1 && v3.x > -1.05 && v3.x < 1.05 && v3.y > -1.05 && v3.y < 1.05;
+        if (ok) {
+          var x = (v3.x * 0.5 + 0.5) * W, y = (-v3.y * 0.5 + 0.5) * Hh;
+          t.el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) translate(-11px,-50%)';
+          t.el.style.visibility = 'visible';
+        } else {
+          t.el.style.visibility = 'hidden';
+        }
+      }
+    }
+    if (showCotes) {
+      for (var j = 0; j < cotes.length; j++) {
+        var c = cotes[j];
+        v3.copy(c.pos).project(camera);
+        var vis = v3.z < 1 && v3.x > -1.05 && v3.x < 1.05 && v3.y > -1.05 && v3.y < 1.05;
+        if (vis) {
+          var px = (v3.x * 0.5 + 0.5) * W, py = (-v3.y * 0.5 + 0.5) * Hh;
+          c.el.style.transform = 'translate(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px) translate(-50%,-50%)';
+          c.el.style.visibility = 'visible';
+        } else {
+          c.el.style.visibility = 'hidden';
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
